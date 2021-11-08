@@ -19,29 +19,5 @@ async function copyDir(src, dest) {
 }
 copyDir(srcFiles, src);
 
-// function copyDir() {
-//     fs.mkdir(path.join(__dirname, 'files-copy'), { recursive: true }, (err) => {
-//         if (err) {
-//             return console.error(err);
-//         } else console.log('Directory created successfully!');
-//     });
-//     fs.readdir(srcFiles, [withFileTypes = true], function (err, items) {
-//         function callback(err) {
-//             if (err) console.log(err);;
-//             console.log('file copy successfully!');
-//         }
-//         fse.copy(srcFiles, path.join(__dirname, 'files-copy'), err => {
-//             if (err) return console.error(err)
-//             console.log('copy is success!')
-//         })
-//         // for (let i = 0; i < items.length; i++) {
-//         //     let file = src + '/' + items[i];
-
-
-//         // }
-//     });
-// }
-
-// copyDir();
 
 
