@@ -1,23 +1,57 @@
-const src = './04-copy-directory/files-copy';
+const fs = require('fs').promises;
 const path = require('path');
-const srcFiles = './04-copy-directory/files'
-const { promises: fs } = require("fs")
+const f = require('fs');
+
+let srcFiles = path.resolve(__dirname, 'files');
+let srcCopyFiles = path.resolve(__dirname, 'files-copy');
 
 
-async function copyDir(src, dest) {
-    await fs.mkdir(dest, { recursive: true });
-    let entries = await fs.readdir(src, { withFileTypes: true });
+async function getSrc() {
 
-    for (let entry of entries) {
-        let srcPath = path.join(src, entry.name);
-        let destPath = path.join(dest, entry.name);
+    let src = await fs.readdir(path.resolve(__dirname), {
+        withFileTypes: true,
+    });
+    let f = 0;
 
-        entry.isDirectory() ?
-            await copyDir(srcPath, destPath) :
-            await fs.copyFile(srcPath, destPath);
+    src.forEach(e => {
+        if (e.name === 'files-copy') {
+            f++;
+        }
+    });
+
+    if (f === 1) {
+        await fs.rm(path.resolve(__dirname, 'files-copy'), { recursive: true });
     }
 }
-copyDir(srcFiles, src);
 
+async function copyDir() {
 
+    await getSrc();
+    await fs.mkdir(srcCopyFiles, { recursive: true });
 
+    let files = await fs.readdir(srcFiles, {
+        withFileTypes: true,
+    });
+
+    let checkFilesOrDir = files.filter((e) => e.isFile());
+
+    for (let i = 0; i < checkFilesOrDir.length; i++) {
+
+        let prevSrc = await path.resolve(srcFiles, checkFilesOrDir[i].name);
+        let nextSrc = await path.resolve(srcCopyFiles, checkFilesOrDir[i].name);
+        let prevRStream;
+
+        if (checkFilesOrDir[i].name.slice(-3) === 'jpg') {
+            prevRStream = await f.createReadStream(prevSrc);
+        } else {
+            prevRStream = await f.createReadStream(prevSrc, 'utf8');
+        }
+
+        let writeStream = await f.createWriteStream(nextSrc);
+
+        await prevRStream.pipe(writeStream);
+
+    }
+}
+
+copyDir();
