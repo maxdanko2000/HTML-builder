@@ -1,23 +1,45 @@
-const fs = require("fs");
+const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
-const { stdin: input, stdout: output } = require('process');
-const rl = readline.createInterface({ input, output });
-const src = path.resolve('02-write-file', 'text.txt')
-const process = require('process');
 
-process.on('exit', () => {
-    console.log(`\n Good luck!`);
-    rl.close();
+const srcFile = path.resolve(__dirname, 'text.txt');
+
+fs.open(srcFile, 'w', (err) => {
+    if (err) throw err;
+    console.log('Enter something: ');
+    input.prompt();
 });
 
-rl.question('What\'s your name? ', (answer) => {
-    if (answer == 'exit') {
-        rl.close();
+
+
+const input = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+});
+
+input.addListener('line', (data) => {
+    if (data === 'exit') {
+        onExit();
     } else {
-        fs.writeFile(src, `${answer}`, function (error) {
-            if (error) throw error;
-            rl.close();
+        fs.appendFile(srcFile, `\n${data}`, (err) => {
+            if (err) {
+                throw err;
+            }
         });
+        someThing();
     }
 });
+
+function someThing() {
+    console.log('Something more?(Enter \'exit\' or Control-C to exit):');
+    input.prompt();
+}
+
+input.addListener('SIGINT', () => {
+    onExit();
+});
+
+function onExit() {
+    console.log('Good Luck!');
+    input.close();
+}
